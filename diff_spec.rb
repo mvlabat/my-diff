@@ -30,4 +30,21 @@ describe 'Diff implementation' do
         Diff::Line.new(Diff::ADDED, 'Lines'),
                                 ])
   end
+
+  it 'should construct reversed diff' do
+    extend Diff #not working? :(
+
+    diff = Diff::Implementation.new
+    diff.load_from_file('file2.txt', 'file1.txt')
+
+    expect(diff.get_diff).to eq([
+                                    Diff::Line.new(Diff::MODIFIED, 'Another', 'Some'),
+                                    Diff::Line.new(Diff::ADDED, 'Simple'),
+                                    Diff::Line.new(Diff::COMMON, 'Text'),
+                                    Diff::Line.new(Diff::COMMON, 'File'),
+                                    Diff::Line.new(Diff::REMOVED, 'With'),
+                                    Diff::Line.new(Diff::REMOVED, 'Additional'),
+                                    Diff::Line.new(Diff::REMOVED, 'Lines'),
+                                ])
+  end
 end
