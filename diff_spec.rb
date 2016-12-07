@@ -24,6 +24,17 @@ describe 'Diff implementation' do
                                                })
   end
 
+  it 'should get complex common lines' do
+    diff = Diff::Implementation.new
+    diff.load_from_file('file_complex1.txt', 'file_complex2.txt')
+
+    expect(diff.send(:get_common_lines)).to eq({
+                                                   1 => 3,
+                                                   3 => 5,
+                                                   8 => 6,
+                                               })
+  end
+
   it 'should construct diff' do
     extend Diff #not working? :(
 
@@ -31,7 +42,7 @@ describe 'Diff implementation' do
     diff.load_from_file('file1.txt', 'file2.txt')
 
     expect(diff.get_diff).to eq([
-                                    Diff::Line.new(Diff::MODIFIED, 'Some', 'Another'),
+                                    Diff::Line.new(Diff::MODIFIED, 'Another', 'Some'),
                                     Diff::Line.new(Diff::REMOVED, 'Simple'),
                                     Diff::Line.new(Diff::COMMON, 'Text'),
                                     Diff::Line.new(Diff::COMMON, 'File'),
@@ -48,13 +59,33 @@ describe 'Diff implementation' do
     diff.load_from_file('file2.txt', 'file1.txt')
 
     expect(diff.get_diff).to eq([
-                                    Diff::Line.new(Diff::MODIFIED, 'Another', 'Some'),
+                                    Diff::Line.new(Diff::MODIFIED, 'Some', 'Another'),
                                     Diff::Line.new(Diff::ADDED, 'Simple'),
                                     Diff::Line.new(Diff::COMMON, 'Text'),
                                     Diff::Line.new(Diff::COMMON, 'File'),
                                     Diff::Line.new(Diff::REMOVED, 'With'),
                                     Diff::Line.new(Diff::REMOVED, 'Additional'),
                                     Diff::Line.new(Diff::REMOVED, 'Lines'),
+                                ])
+  end
+
+  it 'should construct more complex diff' do
+    diff = Diff::Implementation.new
+    diff.load_from_file('file_complex1.txt', 'file_complex2.txt')
+
+    expect(diff.get_diff).to eq([
+        Diff::Line.new(Diff::MODIFIED, 'b1', 'a1'),
+        Diff::Line.new(Diff::ADDED, 'b2'),
+        Diff::Line.new(Diff::ADDED, 'b3'),
+        Diff::Line.new(Diff::COMMON, 'c1'),
+        Diff::Line.new(Diff::MODIFIED, 'b4', 'a2'),
+        Diff::Line.new(Diff::COMMON, 'c2'),
+        Diff::Line.new(Diff::REMOVED, 'a3'),
+        Diff::Line.new(Diff::REMOVED, 'a4'),
+        Diff::Line.new(Diff::REMOVED, 'a5'),
+        Diff::Line.new(Diff::REMOVED, 'a6'),
+        Diff::Line.new(Diff::COMMON, 'c3'),
+        Diff::Line.new(Diff::ADDED, 'b5'),
                                 ])
   end
 end

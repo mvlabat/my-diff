@@ -44,41 +44,44 @@ module Diff
 
     def construct_diff(common_lines)
       diff = []
-      last_line1 = 0
-      last_line2 = 0
+      last_line1 = -1
+      last_line2 = -1
       buf = 0
 
       write_diff_lines = lambda do |line1, line2|
-        mod = COMMON
-        diff_lines = (line1 + buf - line2).abs
-        if line1 < line2
+        # Put modified strings into diff
+        ([line1 - last_line1 - 1, line2 - last_line2 - 1].min).times { |i|
+          diff.push(Line.new(MODIFIED, @file2[last_line2 + i + 1], @file1[last_line1 + i + 1]))
+        }
+
+        # Put added/removed strings into diff
+        diff_lines = line1 + buf - line2
+        buf -= diff_lines
+        if diff_lines < 0
           mod = ADDED
           file = @file2
-          buf += diff_lines
-        elsif line1 > line2
+          line = line2 - diff_lines.abs
+        elsif diff_lines > 0
           mod = REMOVED
           file = @file1
-          buf -= diff_lines
+          line = line1 - diff_lines.abs
         end
 
-        min = [line1, line2].min
-        (last_line1...min).each { |i|
-          diff.push(Line.new(MODIFIED, @file1[i], @file2[last_line2 + i]))
+        diff_lines.abs.times { |i|
+          diff.push(Line.new(mod, file[line + i]))
         }
+
+        # Remember the previous lines for further iterations
         last_line1 = line1
         last_line2 = line2
-
-        (min...(min + diff_lines)).each { |i|
-          diff.push(Line.new(mod, file[i]))
-        }
       end
 
       common_lines.each { |line1, line2|
         write_diff_lines.call(line1, line2)
-        diff.push(Line.new(COMMON, @file2[line2]))
+        diff.push(Line.new(COMMON, @file1[line1]))
       }
 
-      write_diff_lines.call(@file1.length - 1, @file2.length - 1)
+      write_diff_lines.call(@file1.length, @file2.length)
 
       diff
     end
