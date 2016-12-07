@@ -74,18 +74,58 @@ describe 'Diff implementation' do
     diff.load_from_file('file_complex1.txt', 'file_complex2.txt')
 
     expect(diff.get_diff).to eq([
-        Diff::Line.new(Diff::MODIFIED, 'b1', 'a1'),
-        Diff::Line.new(Diff::ADDED, 'b2'),
-        Diff::Line.new(Diff::ADDED, 'b3'),
-        Diff::Line.new(Diff::COMMON, 'c1'),
-        Diff::Line.new(Diff::MODIFIED, 'b4', 'a2'),
-        Diff::Line.new(Diff::COMMON, 'c2'),
-        Diff::Line.new(Diff::REMOVED, 'a3'),
-        Diff::Line.new(Diff::REMOVED, 'a4'),
-        Diff::Line.new(Diff::REMOVED, 'a5'),
-        Diff::Line.new(Diff::REMOVED, 'a6'),
-        Diff::Line.new(Diff::COMMON, 'c3'),
-        Diff::Line.new(Diff::ADDED, 'b5'),
+                                    Diff::Line.new(Diff::MODIFIED, 'b1', 'a1'),
+                                    Diff::Line.new(Diff::ADDED, 'b2'),
+                                    Diff::Line.new(Diff::ADDED, 'b3'),
+                                    Diff::Line.new(Diff::COMMON, 'c1'),
+                                    Diff::Line.new(Diff::MODIFIED, 'b4', 'a2'),
+                                    Diff::Line.new(Diff::COMMON, 'c2'),
+                                    Diff::Line.new(Diff::REMOVED, 'a3'),
+                                    Diff::Line.new(Diff::REMOVED, 'a4'),
+                                    Diff::Line.new(Diff::REMOVED, 'a5'),
+                                    Diff::Line.new(Diff::REMOVED, 'a6'),
+                                    Diff::Line.new(Diff::COMMON, 'c3'),
+                                    Diff::Line.new(Diff::ADDED, 'b5'),
                                 ])
+  end
+
+  it 'should work without common lines 1' do
+    diff = Diff::Implementation.new
+    diff.load_from_array(['a1', 'a2'], ['b1', 'b2'])
+
+    expect(diff.get_diff).to eq([
+                                    Diff::Line.new(Diff::MODIFIED, 'b1', 'a1'),
+                                    Diff::Line.new(Diff::MODIFIED, 'b2', 'a2'),
+                                ])
+  end
+
+  it 'should work without common lines 2' do
+    diff = Diff::Implementation.new
+    diff.load_from_array(['a1', 'a2'], ['b1', 'b2', 'b3'])
+
+    expect(diff.get_diff).to eq([
+                                    Diff::Line.new(Diff::MODIFIED, 'b1', 'a1'),
+                                    Diff::Line.new(Diff::MODIFIED, 'b2', 'a2'),
+                                    Diff::Line.new(Diff::ADDED, 'b3'),
+                                ])
+  end
+
+
+
+  it 'should work with common lines only' do
+    diff = Diff::Implementation.new
+    diff.load_from_array(['c1', 'c2'], ['c1', 'c2'])
+
+    expect(diff.get_diff).to eq([
+                                    Diff::Line.new(Diff::COMMON, 'c1'),
+                                    Diff::Line.new(Diff::COMMON, 'c2'),
+                                ])
+  end
+
+  it 'should work with no input' do
+    diff = Diff::Implementation.new
+    diff.load_from_array([], [])
+
+    expect(diff.get_diff).to eq([])
   end
 end
