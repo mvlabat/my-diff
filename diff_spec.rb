@@ -14,6 +14,16 @@ describe 'Diff implementation' do
     })
   end
 
+  it 'should get reversed common lines' do
+    diff = Diff::Implementation.new
+    diff.load_from_file('file2.txt', 'file1.txt')
+
+    expect(diff.send(:get_common_lines)).to eq({
+                                                   1 => 2,
+                                                   2 => 3,
+                                               })
+  end
+
   it 'should construct diff' do
     extend Diff #not working? :(
 
