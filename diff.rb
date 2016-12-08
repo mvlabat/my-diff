@@ -30,12 +30,13 @@ module Diff
       file2 = @file2.dup
       common_lines = {}
 
-      last_taken_line = -1
+      acc = 0
       @file1.each_with_index { |str, i|
         line = file2.index(str)
-        if !line.nil? && line > last_taken_line
-          common_lines[i] = line
-          last_taken_line = line
+        unless line.nil?
+          common_lines[i] = acc + line
+          acc += line + 1
+          file2 = file2.drop(line + 1)
         end
       }
 
@@ -108,6 +109,5 @@ module Diff
   REMOVED = 2
   MODIFIED = 4
   COMMON = 8
-
 
 end
